@@ -2,6 +2,7 @@ const topbar = document.querySelector(".topbar");
 const menuToggle = document.querySelector(".menu-toggle");
 const siteHeader = document.querySelector(".site-header");
 const scrollTargetKey = "ecotech-scroll-target";
+const mobileMenuBreakpoint = window.matchMedia("(max-width: 920px)");
 
 function updateHeaderOffset() {
   if (!siteHeader) {
@@ -52,43 +53,32 @@ function scrollToSection(hash, replaceState = false, behavior = "smooth") {
   }
 }
 
-function closeMenu() {
+function setMenuState(isOpen) {
   if (!topbar || !menuToggle) {
     return;
   }
 
-  topbar.classList.remove("is-open");
-  menuToggle.setAttribute("aria-expanded", "false");
+  topbar.classList.toggle("is-open", isOpen);
+  menuToggle.setAttribute("aria-expanded", String(isOpen));
+  menuToggle.setAttribute("aria-label", isOpen ? "Fechar menu principal" : "Abrir menu principal");
+  document.body.classList.toggle("menu-open", isOpen && mobileMenuBreakpoint.matches);
+}
+
+function closeMenu() {
+  setMenuState(false);
 }
 
 function initMenu() {
   updateHeaderOffset();
 
   if (!topbar || !menuToggle) {
-    document.querySelectorAll(".nav-links a[href*='#']").forEach((link) => {
-      link.addEventListener("click", (event) => {
-        const url = new URL(link.href, window.location.href);
-
-        if (url.pathname === window.location.pathname && url.hash) {
-          event.preventDefault();
-          scrollToSection(url.hash, true);
-          return;
-        }
-
-        if (url.hash) {
-          event.preventDefault();
-          sessionStorage.setItem(scrollTargetKey, url.hash);
-          window.location.href = url.href.split("#")[0];
-        }
-      });
-    });
-
     return;
   }
 
+  setMenuState(false);
+
   menuToggle.addEventListener("click", () => {
-    const isOpen = topbar.classList.toggle("is-open");
-    menuToggle.setAttribute("aria-expanded", String(isOpen));
+    setMenuState(!topbar.classList.contains("is-open"));
   });
 
   document.querySelectorAll(".nav-links a").forEach((link) => {
@@ -113,9 +103,46 @@ function initMenu() {
       closeMenu();
     });
   });
+
+  document.addEventListener("click", (event) => {
+    if (!mobileMenuBreakpoint.matches || !topbar.classList.contains("is-open")) {
+      return;
+    }
+
+    if (topbar.contains(event.target)) {
+      return;
+    }
+
+    closeMenu();
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key !== "Escape" || !topbar.classList.contains("is-open")) {
+      return;
+    }
+
+    closeMenu();
+    menuToggle.focus();
+  });
+
+  const handleBreakpointChange = (event) => {
+    if (!event.matches) {
+      closeMenu();
+    }
+  };
+
+  if (typeof mobileMenuBreakpoint.addEventListener === "function") {
+    mobileMenuBreakpoint.addEventListener("change", handleBreakpointChange);
+  } else {
+    mobileMenuBreakpoint.addListener(handleBreakpointChange);
+  }
 }
 
 function initTopicTransitions() {
+  if (!document.documentElement.classList.contains("js")) {
+    return;
+  }
+
   window.requestAnimationFrame(() => {
     document.body.classList.add("page-ready");
   });
@@ -128,6 +155,9 @@ function markActivePage() {
   let activeLink = null;
 
   navLinks.forEach((link) => {
+    link.classList.remove("active");
+    link.removeAttribute("aria-current");
+
     const url = new URL(link.href, window.location.href);
     const targetPath = url.pathname.split("/").pop() || "index.html";
 
@@ -149,86 +179,168 @@ function markActivePage() {
 
   if (activeLink) {
     activeLink.classList.add("active");
+    activeLink.setAttribute("aria-current", "page");
   }
 }
 
-function initMap() {
+function escapeHtml(value) {
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function setMapFallback(message) {
   const mapElement = document.getElementById("ecopontos-map");
 
-  if (!mapElement || !window.L) {
+  if (!mapElement) {
     return;
   }
 
-  const ecopontosAracatuba = [
-    {
-      name: "Ecoponto Lago Azul",
-      address: "Av. Juscelino Kubitschek e Rua José Guerra",
-      materials: "Entulho, recicláveis, móveis, eletrodomésticos, lâmpadas e baterias domésticas",
-      lat: -21.2369994,
-      lon: -50.4579689
-    },
-    {
-      name: "Ecoponto Claudionor Cinti",
-      address: "Av. Juscelino Kubitschek e Rua Adalberto da Cunha Capela",
-      materials: "Entulho, recicláveis, móveis, eletrodomésticos, lâmpadas e baterias domésticas",
-      lat: -21.2302376,
-      lon: -50.4713378
-    },
-    {
-      name: "Ecoponto São José",
-      address: "Rua Rafael Manarelli e Rua Deodato Izique",
-      materials: "Entulho, recicláveis, móveis, eletrodomésticos, lâmpadas e baterias domésticas",
-      lat: -21.2001,
-      lon: -50.474
-    },
-    {
-      name: "Ecoponto Country",
-      address: "Av. Odorindo Perenha, 2220",
-      materials: "Entulho, recicláveis, móveis, eletrodomésticos, lâmpadas e baterias domésticas",
-      lat: -21.2186112,
-      lon: -50.4104048
-    },
-    {
-      name: "Ecoponto Fundadores",
-      address: "Av. dos Fundadores, 4783",
-      materials: "Entulho, recicláveis, móveis, eletrodomésticos, lâmpadas e baterias domésticas",
-      lat: -21.191059,
-      lon: -50.4748018
-    },
-    {
-      name: "PEV da Secretaria de Meio Ambiente",
-      address: "Av. Doutor Alcides Fagundes Chagas, 222",
-      materials: "Lâmpadas, baterias domésticas e recicláveis em pequenas quantidades",
-      lat: -21.1981831,
-      lon: -50.431116
-    }
-  ];
+  mapElement.innerHTML = `<p class="map-fallback">${escapeHtml(message)}</p>`;
+}
 
-  const map = L.map("ecopontos-map", {
-    scrollWheelZoom: false
-  }).setView([-21.2087, -50.4456], 12);
+function sanitizeEcopointsData(data) {
+  if (!Array.isArray(data)) {
+    return [];
+  }
 
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-  }).addTo(map);
+  return data.filter((point) => {
+    return point &&
+      typeof point.name === "string" &&
+      typeof point.address === "string" &&
+      typeof point.materials === "string" &&
+      typeof point.hours === "string" &&
+      typeof point.mapsUrl === "string" &&
+      Number.isFinite(point.lat) &&
+      Number.isFinite(point.lon);
+  });
+}
 
-  const bounds = [];
+function getEmbeddedEcopointsData() {
+  const script = document.getElementById("ecopoints-data");
 
-  ecopontosAracatuba.forEach((point) => {
-    const marker = L.marker([point.lat, point.lon]).addTo(map);
+  if (!script) {
+    return [];
+  }
 
-    marker.bindPopup(
-      "<strong>" + point.name + "</strong><br>" +
-      point.address + "<br>" +
-      point.materials
-    );
+  try {
+    return sanitizeEcopointsData(JSON.parse(script.textContent || "[]"));
+  } catch {
+    return [];
+  }
+}
 
-    bounds.push([point.lat, point.lon]);
+function normalizePoints(points) {
+  const latitudes = points.map((point) => point.lat);
+  const longitudes = points.map((point) => point.lon);
+  const minLat = Math.min(...latitudes);
+  const maxLat = Math.max(...latitudes);
+  const minLon = Math.min(...longitudes);
+  const maxLon = Math.max(...longitudes);
+  const latRange = Math.max(maxLat - minLat, 0.0001);
+  const lonRange = Math.max(maxLon - minLon, 0.0001);
+  const padding = 12;
+
+  return points.map((point, index) => {
+    const x = padding + ((point.lon - minLon) / lonRange) * (100 - padding * 2);
+    const y = padding + ((maxLat - point.lat) / latRange) * (100 - padding * 2);
+    const shiftOptions = ["-20px", "-6px", "14px", "-14px", "18px", "2px"];
+    const isLeft = x > 58;
+
+    return {
+      ...point,
+      markerX: `${x.toFixed(2)}%`,
+      markerY: `${y.toFixed(2)}%`,
+      labelClass: isLeft ? "label-left" : "label-right",
+      shiftY: shiftOptions[index % shiftOptions.length],
+      shortAddress: point.address.replace(/^Cruzamento entre /i, "")
+    };
+  });
+}
+
+function renderSchematicMap(points) {
+  const mapElement = document.getElementById("ecopontos-map");
+
+  if (!mapElement) {
+    return;
+  }
+
+  const normalizedPoints = normalizePoints(points);
+  const markersMarkup = normalizedPoints.map((point, index) => {
+    return `
+      <a
+        class="map-marker ${point.labelClass}"
+        href="${escapeHtml(point.mapsUrl)}"
+        target="_blank"
+        rel="noopener noreferrer"
+        style="--x:${point.markerX}; --y:${point.markerY}; --shift-y:${point.shiftY};"
+        aria-label="${escapeHtml(point.name)}. Abrir localização no mapa."
+      >
+        <span class="marker-dot" aria-hidden="true"></span>
+        <span class="marker-label">
+          <strong>${index + 1}. ${escapeHtml(point.name)}</strong>
+          <span>${escapeHtml(point.shortAddress)}</span>
+        </span>
+      </a>
+    `;
+  }).join("");
+
+  mapElement.innerHTML = `
+    <div class="schematic-map">
+      <div class="schematic-map-canvas" role="img" aria-label="Mapa esquemático com a posição relativa dos ecopontos de Araçatuba">
+        ${markersMarkup}
+      </div>
+      <p class="map-caption">Mapa esquemático baseado nas coordenadas dos ecopontos. Use os marcadores ou os cartões ao lado para abrir a localização completa.</p>
+    </div>
+  `;
+}
+
+async function loadEcopointsData() {
+  const embeddedData = getEmbeddedEcopointsData();
+
+  if (embeddedData.length) {
+    return embeddedData;
+  }
+
+  const response = await fetch("data/ecopontos-aracatuba.json", {
+    cache: "no-store"
   });
 
-  if (bounds.length) {
-    map.fitBounds(bounds, { padding: [28, 28] });
+  if (!response.ok) {
+    throw new Error(`Falha ao carregar ecopontos: ${response.status}`);
   }
+
+  const data = await response.json();
+
+  if (!Array.isArray(data)) {
+    throw new Error("Formato inválido dos ecopontos.");
+  }
+
+  return sanitizeEcopointsData(data);
+}
+
+function initEcopointsPage() {
+  const mapElement = document.getElementById("ecopontos-map");
+
+  if (!mapElement) {
+    return;
+  }
+
+  loadEcopointsData()
+    .then((ecopoints) => {
+      if (!ecopoints.length) {
+        setMapFallback("Não foi possível carregar os dados dos ecopontos agora.");
+        return;
+      }
+
+      renderSchematicMap(ecopoints);
+    })
+    .catch(() => {
+      setMapFallback("Não foi possível carregar o mapa agora. Os cartões com endereços continuam disponíveis nesta página.");
+    });
 }
 
 function syncInitialHashPosition() {
@@ -264,10 +376,17 @@ function syncInitialHashPosition() {
 initMenu();
 initTopicTransitions();
 markActivePage();
-initMap();
+initEcopointsPage();
 syncInitialHashPosition();
 
-window.addEventListener("resize", updateHeaderOffset);
+window.addEventListener("resize", () => {
+  updateHeaderOffset();
+
+  if (!mobileMenuBreakpoint.matches) {
+    closeMenu();
+  }
+});
+
 window.addEventListener("hashchange", () => {
   if (window.location.hash) {
     scrollToSection(window.location.hash, false, "auto");

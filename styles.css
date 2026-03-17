@@ -44,18 +44,21 @@ html {
 body {
   margin: 0;
   min-height: 100vh;
-  font-family: "Inter", "Segoe UI", sans-serif;
+  font-family: "Trebuchet MS", "Segoe UI", Verdana, sans-serif;
   color: var(--text);
   background:
     radial-gradient(circle at top left, rgba(34, 197, 94, 0.14), transparent 26%),
     radial-gradient(circle at top right, rgba(37, 99, 235, 0.12), transparent 24%),
     linear-gradient(180deg, #ffffff 0%, var(--bg) 100%);
+}
+
+html.js body {
   opacity: 0;
   transform: translateY(2px);
   transition: opacity 90ms ease-out, transform 90ms ease-out;
 }
 
-body.page-ready {
+html.js body.page-ready {
   opacity: 1;
   transform: translateY(0);
 }
@@ -71,11 +74,40 @@ a {
   text-decoration: none;
 }
 
+:focus-visible {
+  outline: 3px solid rgba(37, 99, 235, 0.38);
+  outline-offset: 4px;
+}
+
 button,
 input,
 textarea,
 select {
   font: inherit;
+}
+
+.skip-link {
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  z-index: 4000;
+  padding: 0.85rem 1.1rem;
+  border-radius: 999px;
+  background: var(--surface-strong);
+  border: 1px solid rgba(34, 197, 94, 0.18);
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.12);
+  color: var(--green-700);
+  font-weight: 700;
+  transform: translateY(-180%);
+  transition: transform 180ms ease;
+}
+
+.skip-link:focus-visible {
+  transform: translateY(0);
+}
+
+body.menu-open {
+  overflow: hidden;
 }
 
 .shell {
@@ -107,7 +139,7 @@ select {
 .brand {
   display: inline-flex;
   align-items: center;
-  font-family: "Poppins", "Inter", sans-serif;
+  font-family: "Franklin Gothic Medium", "Trebuchet MS", "Segoe UI", sans-serif;
   font-size: 1.7rem;
   font-weight: 800;
   color: var(--green-700);
@@ -265,7 +297,7 @@ select {
 .section-heading h2,
 .footer-heading h2 {
   margin: 0 0 var(--space-3);
-  font-family: "Poppins", "Inter", sans-serif;
+  font-family: "Franklin Gothic Medium", "Trebuchet MS", "Segoe UI", sans-serif;
   font-size: clamp(2.2rem, 5vw, 4.8rem);
   line-height: 1.02;
   letter-spacing: -0.03em;
@@ -715,7 +747,7 @@ select {
 .stat-card strong {
   display: block;
   margin-bottom: 0.55rem;
-  font-family: "Poppins", "Inter", sans-serif;
+  font-family: "Franklin Gothic Medium", "Trebuchet MS", "Segoe UI", sans-serif;
   font-size: clamp(2rem, 4vw, 3rem);
   line-height: 1;
   color: var(--green-700);
@@ -746,6 +778,16 @@ select {
   align-content: start;
 }
 
+.ecopoints-status {
+  margin: 0;
+  padding: 1rem 1.15rem;
+  border: 1px dashed rgba(37, 99, 235, 0.18);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.78);
+  color: var(--muted);
+  line-height: 1.7;
+}
+
 .practical-card strong,
 .metric-card strong,
 .footer-card strong {
@@ -772,6 +814,9 @@ select {
   border-radius: 22px;
   overflow: hidden;
   border: 1px solid var(--line);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(240, 249, 255, 0.92)),
+    radial-gradient(circle at top right, rgba(34, 197, 94, 0.12), transparent 34%);
 }
 
 .map-panel {
@@ -779,6 +824,122 @@ select {
   z-index: 1;
   align-self: start;
   overflow: hidden;
+}
+
+.schematic-map {
+  display: grid;
+  gap: 0.9rem;
+  padding: 1rem;
+}
+
+.schematic-map-canvas {
+  position: relative;
+  min-height: 390px;
+  border: 1px solid rgba(37, 99, 235, 0.14);
+  border-radius: 20px;
+  overflow: hidden;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(239, 246, 255, 0.92)),
+    radial-gradient(circle at top left, rgba(34, 197, 94, 0.12), transparent 32%);
+}
+
+.schematic-map-canvas::before,
+.schematic-map-canvas::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.schematic-map-canvas::before {
+  background:
+    linear-gradient(rgba(37, 99, 235, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(37, 99, 235, 0.06) 1px, transparent 1px);
+  background-size: 18% 18%;
+}
+
+.schematic-map-canvas::after {
+  background:
+    radial-gradient(circle at 30% 28%, rgba(34, 197, 94, 0.12), transparent 16%),
+    radial-gradient(circle at 70% 68%, rgba(37, 99, 235, 0.12), transparent 18%);
+}
+
+.map-marker {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  z-index: 1;
+  display: inline-flex;
+  text-decoration: none;
+  transform: translate(-50%, -50%);
+}
+
+.marker-dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, 0.96);
+  background: var(--accent-gradient);
+  box-shadow: 0 0 0 7px rgba(34, 197, 94, 0.14);
+}
+
+.marker-label {
+  position: absolute;
+  min-width: 180px;
+  max-width: 220px;
+  display: grid;
+  gap: 0.18rem;
+  padding: 0.7rem 0.8rem;
+  border: 1px solid rgba(37, 99, 235, 0.12);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.96);
+  color: var(--text);
+  box-shadow: 0 18px 36px rgba(15, 23, 42, 0.08);
+  transform: translate(var(--label-x), var(--label-y));
+}
+
+.marker-label strong {
+  font-size: 0.95rem;
+  color: var(--green-700);
+}
+
+.marker-label span {
+  color: var(--muted);
+  font-size: 0.8rem;
+  line-height: 1.45;
+}
+
+.map-marker.label-right {
+  --label-x: 0.85rem;
+  --label-y: calc(-0.9rem + var(--shift-y));
+}
+
+.map-marker.label-left {
+  --label-x: calc(-100% - 0.85rem);
+  --label-y: calc(-0.9rem + var(--shift-y));
+}
+
+.map-marker:hover .marker-label,
+.map-marker:focus-visible .marker-label {
+  border-color: rgba(34, 197, 94, 0.22);
+  box-shadow: 0 22px 42px rgba(15, 23, 42, 0.12);
+}
+
+.map-caption {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.map-fallback {
+  display: grid;
+  place-items: center;
+  min-height: inherit;
+  margin: 0;
+  padding: 1.25rem;
+  color: var(--muted);
+  line-height: 1.7;
+  text-align: center;
 }
 
 #ecopontos-map .leaflet-top,
@@ -809,6 +970,10 @@ select {
   padding: 1.2rem 1.5rem;
 }
 
+.footer-shell-shared {
+  align-items: flex-start;
+}
+
 .footer-minimal {
   display: grid;
   gap: 0.2rem;
@@ -816,6 +981,39 @@ select {
 
 .footer-minimal strong {
   color: var(--green-700);
+}
+
+.footer-meta {
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.footer-nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.55rem;
+}
+
+.footer-nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 0.65rem 0.95rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--blue-700);
+  font-weight: 700;
+  background: rgba(255, 255, 255, 0.84);
+  transition: transform 180ms ease, border-color 180ms ease, background-color 180ms ease, color 180ms ease;
+}
+
+.footer-nav a:hover,
+.footer-nav a:focus-visible {
+  color: var(--green-700);
+  border-color: rgba(34, 197, 94, 0.2);
+  background: rgba(220, 252, 231, 0.76);
+  transform: translateY(-2px);
 }
 
 .footer-link {
@@ -879,6 +1077,10 @@ select {
   .footer-shell {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .footer-nav {
+    justify-content: flex-start;
   }
 }
 
@@ -951,8 +1153,42 @@ select {
     min-height: 320px;
   }
 
+  .schematic-map {
+    padding: 0.8rem;
+  }
+
+  .schematic-map-canvas {
+    min-height: 300px;
+  }
+
+  .marker-label {
+    min-width: 132px;
+    max-width: 150px;
+    padding: 0.6rem 0.65rem;
+  }
+
   .hero-home,
   .page-hero {
     padding-top: 0.85rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  html.js body,
+  html.js body.page-ready {
+    opacity: 1;
+    transform: none;
   }
 }

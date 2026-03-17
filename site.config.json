@@ -1,0 +1,73 @@
+{
+  "siteName": "EcoTech",
+  "siteUrl": "https://gustavomenani.github.io/SITE-LPCA/",
+  "language": "pt-BR",
+  "themeColor": "#15803d",
+  "socialImage": "assets/social-card.svg",
+  "twitterCard": "summary_large_image",
+  "footerDescription": "Projeto escolar sobre conscientização, descarte correto e soluções para o lixo eletrônico.",
+  "nav": [
+    {
+      "href": "index.html",
+      "label": "Início"
+    },
+    {
+      "href": "sobre.html",
+      "label": "Sobre"
+    },
+    {
+      "href": "solucoes.html",
+      "label": "Soluções"
+    },
+    {
+      "href": "projeto.html",
+      "label": "Projeto"
+    },
+    {
+      "href": "aracatuba.html",
+      "label": "Ecopontos"
+    },
+    {
+      "href": "contato-ou-fontes.html",
+      "label": "Fontes"
+    }
+  ],
+  "pages": [
+    {
+      "path": "index.html",
+      "title": "EcoTech | Início",
+      "description": "Projeto escolar EcoTech sobre lixo eletrônico, descarte correto, conscientização ambiental e ecopontos em Araçatuba-SP.",
+      "priority": "1.0"
+    },
+    {
+      "path": "sobre.html",
+      "title": "EcoTech | Sobre o Lixo Eletrônico",
+      "description": "Entenda o que é lixo eletrônico, seus impactos no solo, na água e na saúde, e por que o descarte correto é tão importante.",
+      "priority": "0.9"
+    },
+    {
+      "path": "solucoes.html",
+      "title": "EcoTech | Soluções",
+      "description": "Veja soluções práticas para reciclar, reutilizar, separar resíduos eletrônicos e levar materiais aos ecopontos com segurança.",
+      "priority": "0.9"
+    },
+    {
+      "path": "projeto.html",
+      "title": "EcoTech | Projeto",
+      "description": "Conheça a demonstração física do projeto EcoTech e os materiais usados para conscientizar sobre o descarte correto do lixo eletrônico.",
+      "priority": "0.8"
+    },
+    {
+      "path": "aracatuba.html",
+      "title": "EcoTech | Ecopontos em Araçatuba-SP",
+      "description": "Consulte os ecopontos em Araçatuba-SP com endereços, materiais aceitos, horários e mapa local para descarte correto.",
+      "priority": "0.9"
+    },
+    {
+      "path": "contato-ou-fontes.html",
+      "title": "EcoTech | Conclusão e Fontes",
+      "description": "Veja a conclusão do projeto EcoTech, os integrantes do grupo e as fontes utilizadas na pesquisa sobre lixo eletrônico.",
+      "priority": "0.8"
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-label="EcoTech">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#effcf4" />
+      <stop offset="100%" stop-color="#e0ecff" />
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#22c55e" />
+      <stop offset="100%" stop-color="#2563eb" />
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" rx="32" fill="url(#bg)" />
+  <circle cx="160" cy="120" r="120" fill="#dcfce7" opacity="0.85" />
+  <circle cx="1030" cy="120" r="110" fill="#dbeafe" opacity="0.85" />
+  <circle cx="1050" cy="520" r="150" fill="#dcfce7" opacity="0.75" />
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M180 430c110-138 238-220 392-248" stroke="url(#accent)" stroke-width="18" />
+    <path d="M160 350c29-205 206-384 428-413" stroke="#15803d" stroke-width="14" />
+    <path d="M545 70c125 101 197 234 197 393" stroke="#2563eb" stroke-width="14" />
+  </g>
+  <text x="120" y="220" fill="#15803d" font-family="Trebuchet MS, Segoe UI, sans-serif" font-size="58" font-weight="700">EcoTech</text>
+  <text x="120" y="320" fill="#0f172a" font-family="Trebuchet MS, Segoe UI, sans-serif" font-size="84" font-weight="700">Lixo eletrônico</text>
+  <text x="120" y="405" fill="#0f172a" font-family="Trebuchet MS, Segoe UI, sans-serif" font-size="84" font-weight="700">com descarte consciente</text>
+  <text x="120" y="495" fill="#475569" font-family="Trebuchet MS, Segoe UI, sans-serif" font-size="38">Projeto escolar sobre conscientização ambiental, soluções</text>
+  <text x="120" y="545" fill="#475569" font-family="Trebuchet MS, Segoe UI, sans-serif" font-size="38">práticas e ecopontos em Araçatuba-SP.</text>
+</svg>
