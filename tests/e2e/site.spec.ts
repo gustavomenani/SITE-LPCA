@@ -1,0 +1,32 @@
+import { expect, test } from "@playwright/test";
+
+test("navigates through the main pages", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("EcoTech");
+
+  await page.getByRole("link", { name: "Sobre" }).click();
+  await expect(page).toHaveURL(/\/sobre$/);
+
+  await page.getByRole("link", { name: "Soluções" }).click();
+  await expect(page).toHaveURL(/\/solucoes$/);
+});
+
+test("filters ecopoints and keeps the map interactive", async ({ page }) => {
+  await page.goto("/ecopontos");
+  await page.getByLabel("Buscar por endereço, bairro ou material").fill("Aviação");
+  await expect(page.getByText("PEV da Secretaria Municipal de Meio Ambiente e Sustentabilidade")).toBeVisible();
+  await page.getByRole("button", { name: "Lâmpadas" }).click();
+  await expect(page.getByText(/1 pontos aceitam lâmpadas/i)).toBeVisible();
+});
+
+test("serves public data APIs", async ({ request }) => {
+  const ecopointsResponse = await request.get("/api/ecopoints");
+  expect(ecopointsResponse.ok()).toBeTruthy();
+  const resourcesResponse = await request.get("/api/resources");
+  expect(resourcesResponse.ok()).toBeTruthy();
+});
+
+test("redirects legacy html routes", async ({ page }) => {
+  await page.goto("/aracatuba.html");
+  await expect(page).toHaveURL(/\/ecopontos$/);
+});

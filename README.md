@@ -1,136 +1,92 @@
 # EcoTech
 
-Site estático escolar sobre lixo eletrônico, descarte correto e ecopontos em Araçatuba-SP.
+Site escolar em `Next.js` sobre lixo eletronico, descarte correto e ecopontos em Aracatuba-SP. O projeto foi reconstruido para deploy direto no Vercel, leitura rapida no celular e acesso simples por QR code.
 
-## Estrutura do projeto
+## Stack
+
+- `Next.js 16` com App Router
+- `React 19`
+- `Tailwind CSS 4`
+- `TypeScript`
+- `Route Handlers` do Next para APIs publicas
+- `Vitest` para testes de logica
+- `Playwright` para testes E2E
+
+## Estrutura
 
 ```text
-src/
-  assets/     arquivos visuais
-  data/       dados e fontes estruturadas
-  pages/      páginas-fonte do site
-  site.js     comportamento global
-  styles.css  estilos globais
-
-scripts/
-  build_site.py       gera o site final em dist/
-  check_site.py       valida HTML, CSS, JSON-LD e dados
-  update_ecopoints.py atualiza a base local a partir da fonte oficial
-  generate_icons.py   recria os icones PWA
-
-dist/
-  saída pronta para publicação
+app/                      rotas, layout, metadata, APIs e arquivos especiais do Next
+public/assets/            imagens, SVGs e icones publicos
+src/components/common/    blocos visuais compartilhados entre paginas
+src/components/layout/    header e footer globais
+src/components/ecopoints/ interface interativa dos pontos de descarte
+src/components/resources/ apresentacao das fontes e referencias
+src/content/              textos e blocos estaticos das paginas
+src/data/                 JSONs versionados do site, ecopontos e fontes
+src/lib/                  schemas, helpers, SEO e logica de negocio
+scripts/                  manutencao local, incluindo atualizacao dos ecopontos
+tests/unit/               testes de logica e scripts
+tests/e2e/                cenarios Playwright
 ```
 
 ## Como rodar localmente
 
-No Windows, dentro da pasta do projeto:
+Instale as dependencias:
+
+```powershell
+npm.cmd install
+```
+
+Inicie o ambiente:
 
 ```powershell
 .\localhost.cmd
 ```
 
-Para trocar a porta:
+Ou direto com npm:
 
 ```powershell
-.\localhost.cmd 5501
+npm.cmd run dev
 ```
 
-O script gera a pasta `dist/` antes de iniciar o servidor local.
-
-## Como editar o conteúdo
-
-Edite apenas os arquivos em `src/`:
-
-- `src/pages/*.html`: estrutura e conteúdo das páginas
-- `src/styles.css`: estilos do site
-- `src/site.js`: comportamento global e filtros do mapa
-- `src/site.config.json`: navegação, SEO, manifest e dados globais
-- `src/data/ecopontos-aracatuba.json`: base única dos ecopontos e catálogo de materiais
-- `src/data/ecopoints-geo.json`: coordenadas e aliases usados para atualizar a base oficial sem perder os IDs
-- `src/data/resources.json`: base única dos artigos, vídeos e fontes em destaque
-
-## Build
-
-Para gerar manualmente a versão publicada:
+## Comandos principais
 
 ```powershell
-py scripts\build_site.py
+npm.cmd run lint
+npm.cmd run typecheck
+npm.cmd run test
+npm.cmd run build
 ```
 
-Esse script:
-
-- limpa e recria `dist/`
-- injeta cabeçalho e rodapé compartilhados
-- gera SEO e JSON-LD de cada página
-- monta os cartões de ecopontos a partir da base de dados
-- gera `site.webmanifest`
-- gera `robots.txt`
-- gera `sitemap.xml`
-- gera `.nojekyll`
-- valida referências locais na saída final
-
-Para rodar as checagens extras de HTML, CSS e acessibilidade básica:
+Para instalar o Chromium do Playwright e rodar os testes E2E:
 
 ```powershell
-py scripts\check_site.py
+npx.cmd playwright install chromium
+npm.cmd run test:e2e
 ```
 
-Esse script também valida:
+## Dados e manutencao
 
-- estrutura dos arquivos JSON em `src/data/`
-- consistência entre navegação, páginas e assets
-- coerência da base `src/data/ecopoints-geo.json`
-- presença dos ícones declarados no manifest
-- presença de dimensões nas imagens geradas
+Os dados continuam versionados no repositorio:
 
-## Atualização dos ecopontos
+- `src/data/site.config.json`
+- `src/data/ecopontos-aracatuba.json`
+- `src/data/ecopoints-geo.json`
+- `src/data/resources.json`
 
-Quando a Prefeitura de Araçatuba atualizar os ecopontos, rode:
+Quando a Prefeitura de Aracatuba atualizar os ecopontos, rode:
 
 ```powershell
-py scripts\update_ecopoints.py
+npm.cmd run update:ecopoints
 ```
 
-Depois disso, regenere a saída:
+O script consulta a fonte oficial, reconstrui `src/data/ecopontos-aracatuba.json` e preserva os aliases e IDs definidos em `src/data/ecopoints-geo.json`.
 
-```powershell
-py scripts\build_site.py
-py scripts\check_site.py
-```
+## APIs publicas
 
-O arquivo `src/data/ecopoints-geo.json` mantém os IDs, aliases e coordenadas usadas para casar os pontos da fonte oficial com a base do site.
+- `GET /api/ecopoints`
+- `GET /api/resources`
 
-## Qualidade visual
+## Deploy no Vercel
 
-O repositório também tem uma esteira de qualidade em `.github/workflows/site-quality.yml` que:
-
-- gera o build final
-- roda `check_site.py`
-- executa Lighthouse na home e na página de ecopontos
-- captura screenshots desktop e mobile com Playwright
-
-Se quiser rodar essa parte localmente:
-
-```powershell
-npm.cmd install
-npx playwright install chromium
-```
-
-## Publicação
-
-O projeto agora está preparado para deploy direto no Vercel.
-
-O arquivo `vercel.json` já define:
-
-- comando de build
-- diretório final `dist/`
-- headers básicos de cache e segurança
-
-No Vercel, basta importar o repositório. As URLs canônicas e o sitemap usam automaticamente `VERCEL_PROJECT_PRODUCTION_URL` ou `SITE_URL` quando esses valores estiverem disponíveis no ambiente.
-
-## Observações
-
-- `dist/` é saída gerada e não deve ser usado como fonte de edição
-- os cartões de ecopontos e os blocos de fontes em destaque são gerados a partir dos arquivos em `src/data/`
-- o GitHub Actions agora faz checagens de qualidade; o deploy fica por conta do Vercel
+O projeto foi preparado para deploy direto no Vercel sem depender de Python. Basta importar o repositorio. As URLs canonicas usam automaticamente `SITE_URL`, `VERCEL_PROJECT_PRODUCTION_URL` ou `VERCEL_URL` quando esses valores estiverem disponiveis.
