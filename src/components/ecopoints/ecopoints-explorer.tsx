@@ -68,7 +68,7 @@ function EcopointMap({
               }`}
               onClick={() => onSelect(index)}
             >
-              <div className="grid h-full grid-cols-[2.75rem_1fr] items-start gap-3 md:grid-cols-[3rem_1fr] md:gap-4">
+              <div className="grid h-full min-w-0 grid-cols-[2.75rem_minmax(0,1fr)] items-start gap-3 md:grid-cols-[3rem_minmax(0,1fr)] md:gap-4">
                 <span
                   className={`inline-flex h-12 w-10 items-center justify-center rounded-[16px] text-base font-extrabold tracking-tight shadow-sm transition-transform duration-300 group-hover:scale-[1.04] md:h-14 md:w-11 md:rounded-[18px] md:text-lg ${
                     isActive
@@ -78,16 +78,16 @@ function EcopointMap({
                 >
                   {index + 1}
                 </span>
-                <div className="grid h-full grid-rows-[auto_1fr] gap-4">
+                <div className="grid h-full min-w-0 grid-rows-[auto_1fr] gap-4">
                   <div className="min-h-[6.75rem] space-y-1.5 md:min-h-[7.4rem]">
                     <span className="block text-[0.65rem] font-bold uppercase tracking-[0.2em] text-slate-500 md:text-[0.7rem]">
                       Ponto {index + 1}
                     </span>
-                    <p className="font-display text-[1.55rem] font-semibold leading-[0.98] text-balance text-slate-950 md:text-[1.85rem] md:leading-[1.02]">
+                    <p className="min-w-0 text-balance font-display text-[1.55rem] font-semibold leading-[0.98] text-slate-950 [overflow-wrap:anywhere] md:text-[1.85rem] md:leading-[1.02]">
                       {getMapCardTitle(point)}
                     </p>
                   </div>
-                  <p className="max-w-[26ch] self-start text-[0.98rem] leading-7 text-slate-600 md:max-w-none md:text-[1.02rem] md:leading-7">
+                  <p className="max-w-[26ch] min-w-0 self-start text-[0.98rem] leading-7 text-slate-600 [overflow-wrap:anywhere] md:max-w-none md:text-[1.02rem] md:leading-7">
                     {point.address}
                   </p>
                 </div>
